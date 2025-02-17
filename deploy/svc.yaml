@@ -1,1 +1,17 @@
 
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: spring-boot-helloworld
+  namespace: helloworld
+  labels:
+    app: spring-boot-helloworld
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: spring-boot-helloworld
