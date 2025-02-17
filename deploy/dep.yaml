@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: spring-boot-helloworld
-        image: uhub.service.ucloud.cn/xinxin-istio/nginx:latest
+        image: uhub.service.ucloud.cn/xinxin-istio/nginx:1.21
         ports:
         - name: http
           containerPort: 80
