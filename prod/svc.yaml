@@ -6,14 +6,14 @@ metadata:
     service.beta.kubernetes.io/volcengine-loadbalancer-health-check-flag: "off"
     service.beta.kubernetes.io/volcengine-loadbalancer-pass-through: "true"
     service.beta.kubernetes.io/volcengine-loadbalancer-scheduler: wrr
-  name: infctx-prod-250121
-  namespace: default
+  name: infctx-test
+  namespace: namespace
 spec:
   ports:
-  - name: infctx-prod-250121
+  - name: infctx-test
     port: 49871
     protocol: TCP
     targetPort: 49870
   selector:
-    app: infctx-prod-250121
+    app: infctx-test
   type: LoadBalancer
