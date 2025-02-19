@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    apps.vke.volcengine.com/sync-timezone: "true"
+  name: infctx-prod-250121
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: infctx-prod-250121
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: infctx-prod-250121
+    spec:
+      containers:
+      - args:
+        - -c
+        - cd /workspace/InfCtx/ && python -m infctx.main --config /workspace/configs/infctx_caohejing.yaml;
+          echo $? > /var/log/exit
+        command:
+        - /bin/bash
+        image: mp-bp-cn-shanghai.cr.volces.com/online-services/infctx:20250118_232748
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 30
+          httpGet:
+            httpHeaders:
+            - name: Authorization
+              value: Bearer sk-4R81AGvuSEPqi3VQM6uEcg==
+            path: /health
+            port: 49870
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 1
+        name: infctx-prod-container
+        ports:
+        - containerPort: 49870
+          name: infctx-port
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 30
+          httpGet:
+            httpHeaders:
+            - name: Authorization
+              value: Bearer sk-4R81AGvuSEPqi3VQM6uEcg==
+            path: /health
+            port: 49870
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 1
+        resources:
+          limits:
+            nvidia.com/gpu: "2"
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: timezone
+          readOnly: true
+        - mountPath: /var/log
+          name: shared-log-path
+        - mountPath: /workspace/InfCtx/logs
+          name: infctx-log-path
+      - args:
+        - -c
+        - ls -altr /workspace/ && /bin/bash /workspace/check_filebeat.sh
+        command:
+        - /bin/bash
+        env:
+        - name: LOG_COLLECTOR_ENV_TAGS
+          value: __pod_name__|__pod_ip__|__namespace__|__node_name__|__node_ip__
+        - name: __pod_name__
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: __pod_ip__
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: __namespace__
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: __node_name__
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: __node_ip__
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        image: mp-bp-cn-shanghai.cr.volces.com/online-services/logcollector:v241127_1853
+        name: logcollector
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
+        volumeMounts:
+        - mountPath: /var/log
+          name: shared-log-path
+        - mountPath: /usr/local/container/filebeat-7.12.0/etc/
+          name: log-collector-config
+          readOnly: true
+        - mountPath: /usr/local/container/filebeat-7.12.0/data
+          name: log-collector-data
+        - mountPath: /workspace/logs/
+          name: infctx-log-path
+      imagePullSecrets:
+      - name: sunpeng-cr-mpbp
+      volumes:
+      - hostPath:
+          path: /etc/localtime
+        name: timezone
+      - emptyDir: {}
+        name: shared-log-path
+      - emptyDir: {}
+        name: log-collector-data
+      - emptyDir: {}
+        name: infctx-log-path
+      - configMap:
+          name: infctx-logcollector-config
+        name: log-collector-config
