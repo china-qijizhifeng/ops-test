@@ -6,7 +6,7 @@ metadata:
   name: infctx-test
   namespace: infctx
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: infctx-test
