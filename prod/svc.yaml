@@ -7,7 +7,7 @@ metadata:
     service.beta.kubernetes.io/volcengine-loadbalancer-pass-through: "true"
     service.beta.kubernetes.io/volcengine-loadbalancer-scheduler: wrr
   name: infctx-test
-  namespace: namespace
+  namespace: infctx
 spec:
   ports:
   - name: infctx-test
