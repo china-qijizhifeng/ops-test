@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  filebeat.yml: |
+    filebeat:
+      is_sidecar: true
+
+    log_max_bytes: 4mib
+
+    output.tls:
+      endpoint: https://tls-cn-shanghai.ivolces.com
+      secret_id: AKLTNDQ1ZmIxY2FhZDc4NDA2ZGFkZDUwMTRhYTBkYTA3YTk
+      secret_key: WXpKbU9EVmlNbVpsWXpnNU5EWXdObUl6T0dSalltWmpORGN5TW1WaFpEZw==
+      region: cn-shanghai
+      label: k8s-vke-ccr8j939cke3i16ramt8g
+
+    logging.level: info
+    logging.to_files: true
+    logging.files:
+      name: filebeat
+      keepfiles: 7
+      permissions: 0644
+metadata:
+  name: infctx-logcollector-config
+  namespace: infctx
