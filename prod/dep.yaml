@@ -3,13 +3,13 @@ kind: Deployment
 metadata:
   annotations:
     apps.vke.volcengine.com/sync-timezone: "true"
-  name: infctx-prod-250121
+  name: infctx-test
   namespace: infctx
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: infctx-prod-250121
+      app: infctx-test
   strategy:
     rollingUpdate:
       maxSurge: 0
@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        app: infctx-prod-250121
+        app: infctx-test
     spec:
       containers:
       - args:
