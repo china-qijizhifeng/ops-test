@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/volcengine-loadbalancer-address-type: PUBLIC
+    service.beta.kubernetes.io/volcengine-loadbalancer-health-check-flag: "off"
+    service.beta.kubernetes.io/volcengine-loadbalancer-pass-through: "true"
+    service.beta.kubernetes.io/volcengine-loadbalancer-scheduler: wrr
+  name: infctx-prod-250121
+  namespace: default
+spec:
+  ports:
+  - name: infctx-prod-250121
+    port: 49871
+    protocol: TCP
+    targetPort: 49870
+  selector:
+    app: infctx-prod-250121
+  type: LoadBalancer
