@@ -16,4 +16,4 @@ spec:
     targetPort: 49870
   selector:
     app: infctx-test
-  type: LoadBalancer
+  type: ClusterIP
